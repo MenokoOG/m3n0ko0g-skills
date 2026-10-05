@@ -1,0 +1,33 @@
+{
+  "name": "m3n0ko0g-skills",
+  "version": "1.0.0",
+  "description": "Twelve skills, an MCP server and two scouts for auditing the AI systems assembled 2021-2026 that nobody inside can explain, audit, or sign off on. Zero dependencies.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build:skills": "node scripts/build-skills.mjs",
+    "check:skills": "node scripts/build-skills.mjs --check",
+    "test:mcp": "node mcp/test-server.mjs",
+    "test:scouts": "node scouts/typescript/test-m3scout.mjs && python scouts/python/test_m3scout.py",
+    "test": "npm run check:skills && npm run test:mcp && npm run test:scouts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MenokoOG/m3n0ko0g-skills"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "skills",
+    "legacy-ai",
+    "ai-audit",
+    "rag",
+    "evals",
+    "m3n0ko0g"
+  ]
+}

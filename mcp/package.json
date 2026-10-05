@@ -1,0 +1,40 @@
+{
+  "name": "m3n0ko0g-skills-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for the M3n0ko0g free skills library: twelve skills for auditing the AI systems assembled 2021-2026 that nobody inside can explain, audit, or sign off on. Zero dependencies.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "m3n0ko0g-skills-mcp": "./server.mjs"
+  },
+  "main": "./server.mjs",
+  "files": [
+    "server.mjs",
+    "skills/",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "node server.mjs",
+    "list": "node server.mjs --list",
+    "test": "node test-server.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "skills",
+    "legacy-ai",
+    "ai-audit",
+    "rag",
+    "evals",
+    "m3n0ko0g"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MenokoOG/m3n0ko0g-skills"
+  },
+  "homepage": "https://github.com/MenokoOG/m3n0ko0g-skills"
+}

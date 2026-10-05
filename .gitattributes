@@ -1,0 +1,13 @@
+# .skill bundles are zip archives. Never let line-ending conversion near them.
+*.skill binary
+*.zip binary
+
+# Everything the packager reads is normalized to LF on the way in, so keep the
+# working tree matching. Otherwise a Windows checkout re-zips to different bytes
+# than a Linux one and --check fails on whichever machine did not build last.
+*.SKILL.md text eol=lf
+*.md text eol=lf
+*.mjs text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+*.yml text eol=lf

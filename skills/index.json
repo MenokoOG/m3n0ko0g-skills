@@ -1,0 +1,134 @@
+{
+  "generated_by": "scripts/build-skills.mjs",
+  "count": 12,
+  "mcp": {
+    "name": "m3n0ko0g-skills-mcp",
+    "download": "/skills/m3n0ko0g-skills-mcp.zip",
+    "transport": "stdio",
+    "tools": [
+      "list_skills",
+      "get_skill",
+      "search_skills",
+      "new_receipt"
+    ]
+  },
+  "scouts": {
+    "name": "m3scout",
+    "download": "/skills/m3scout.zip",
+    "schema": "m3n0ko0g.scout.evidence/1",
+    "languages": [
+      "python",
+      "typescript"
+    ]
+  },
+  "skills": [
+    {
+      "name": "agent-gate-review",
+      "version": "0.1.0",
+      "description": "Review an AI agent or agentic system for the five controls that decide whether it is safe to give real authority — registration, validation, revocation, escalation, and human-in-the-loop. Produces a gate-by-gate report with concrete failure scenarios, not a compliance checklist. Use before an agent is granted write access, spend authority, customer contact, or any action that cannot be undone.",
+      "license": "Released by Lawrence Jefferson II for public use.",
+      "md": "/skills/agent-gate-review.SKILL.md",
+      "skill": "/skills/agent-gate-review.skill",
+      "bytes": 9086
+    },
+    {
+      "name": "data-in-the-prompt",
+      "version": "0.1.0",
+      "description": "Traces what data actually reaches a third-party model. Follows every field from its source through interpolation, retrieval, tool results, conversation history, and error paths into the request body, then checks it against what the contract, the privacy notice, and the data map say is allowed. Reports what leaves, where, and whether anyone could prove it. Use before an audit, before a provider change, before turning on logging, or when someone asks whether customer data goes to the model and the answer is a pause.",
+      "license": "Released by Lawrence Jefferson II for public use.",
+      "md": "/skills/data-in-the-prompt.SKILL.md",
+      "skill": "/skills/data-in-the-prompt.skill",
+      "bytes": 15836
+    },
+    {
+      "name": "eval-or-vibes",
+      "version": "0.1.0",
+      "description": "Sorts every check on an AI system into Eval, Smoke, Vibe, or None, and tells you which failures would currently ship unnoticed. Then names the cheapest eval that would have caught the last incident. Use before a model swap, before a prompt change on a system you inherited, or when someone asks whether the system is tested and the answer takes more than one sentence.",
+      "license": "Released by Lawrence Jefferson II for public use.",
+      "md": "/skills/eval-or-vibes.SKILL.md",
+      "skill": "/skills/eval-or-vibes.skill",
+      "bytes": 14075
+    },
+    {
+      "name": "hot-path",
+      "version": "0.1.0",
+      "description": "Find the line that makes a function slow. Reads Python or TypeScript, reports time and space complexity, names the exact expression responsible, and gives the rewrite with its new complexity. Also says when the optimization is not worth doing. Use on any function that feels slow, before a performance review, or when a code review says \"this looks O(n squared)\" and nobody wants to re-derive it.",
+      "license": "Released by Lawrence Jefferson II for public use.",
+      "md": "/skills/hot-path.SKILL.md",
+      "skill": "/skills/hot-path.skill",
+      "bytes": 10310
+    },
+    {
+      "name": "incident-replay",
+      "version": "0.1.0",
+      "description": "Reconstructs what an AI system actually did during a bad run, using whatever logs exist, and names precisely which evidence is missing to ever answer the question. Separates what is known from what is inferred from what is unknowable, and ends with the smallest logging change that would make the next incident diagnosable. Use after an agent did something wrong, during a postmortem, or when someone asks what happened and the room goes quiet.",
+      "license": "Released by Lawrence Jefferson II for public use.",
+      "md": "/skills/incident-replay.SKILL.md",
+      "skill": "/skills/incident-replay.skill",
+      "bytes": 16989
+    },
+    {
+      "name": "legacy-modernization-scout",
+      "version": "0.1.0",
+      "description": "Map a legacy system for incremental modernization — inventory the surfaces, find the seams where a facade can be inserted, rank strangler-fig slices by value against reversibility, and design the adapter interfaces between old and new. Produces a written scout report with an explicit register of what is still unknown. Use before committing to any rewrite, replatform, or \"we'll just rebuild it\" decision.",
+      "license": "Released by Lawrence Jefferson II for public use.",
+      "md": "/skills/legacy-modernization-scout.SKILL.md",
+      "skill": "/skills/legacy-modernization-scout.skill",
+      "bytes": 9194
+    },
+    {
+      "name": "model-swap-blast-radius",
+      "version": "0.1.0",
+      "description": "Finds everything that breaks when you change the model underneath an AI system. Maps every place behavior is coupled to the current model, from tool-call format and JSON mode to token budgets, stop sequences, prompt scar tissue, and fine-tune dependencies. Produces a ranked change list and a rollback plan. Use before a deprecation deadline, a cost-cutting swap, a provider move, or a version bump somebody thinks is routine.",
+      "license": "Released by Lawrence Jefferson II for public use.",
+      "md": "/skills/model-swap-blast-radius.SKILL.md",
+      "skill": "/skills/model-swap-blast-radius.skill",
+      "bytes": 15768
+    },
+    {
+      "name": "prompt-archaeology",
+      "version": "0.1.0",
+      "description": "Reconstructs what an undocumented prompt chain actually does. Finds every prompt string in a codebase, maps which call feeds which, and reports the dead branches, the contradictory instructions, the silent duplicates, and the prompts nobody has version control on. Use before changing a prompt you did not write, before a model swap, or when someone asks what this system actually tells the model to do and the honest answer is that nobody knows.",
+      "license": "Released by Lawrence Jefferson II for public use.",
+      "md": "/skills/prompt-archaeology.SKILL.md",
+      "skill": "/skills/prompt-archaeology.skill",
+      "bytes": 13233
+    },
+    {
+      "name": "rag-integrity-check",
+      "version": "0.1.0",
+      "description": "Audits a retrieval-augmented generation pipeline you inherited. Checks the chunking, the embedding model, index freshness, the retrieval-to-answer gap, and whether citations point at text that actually says the thing. Reports which failures are retrieval failures and which are generation failures, because the fix is completely different. Use when a RAG system gives confident wrong answers and nobody can tell which stage broke.",
+      "license": "Released by Lawrence Jefferson II for public use.",
+      "md": "/skills/rag-integrity-check.SKILL.md",
+      "skill": "/skills/rag-integrity-check.skill",
+      "bytes": 14840
+    },
+    {
+      "name": "sign-off-pack",
+      "version": "0.1.0",
+      "description": "Assembles the evidence a named human needs to approve an AI system going live or gaining authority. Turns scattered findings into one document with a scope statement, an evidence table, explicit residual risk, named owners, a rollback plan, and a signature block. Refuses to produce a recommendation, because a pack that recommends approval is a pack that has done the approver's job for them. Use before a go-live, before an agent gets write access, at a stage gate, or when approval keeps stalling because nobody knows what they would be signing.",
+      "license": "Released by Lawrence Jefferson II for public use.",
+      "md": "/skills/sign-off-pack.SKILL.md",
+      "skill": "/skills/sign-off-pack.skill",
+      "bytes": 16656
+    },
+    {
+      "name": "token-bill",
+      "version": "0.1.0",
+      "description": "Works out where the money actually goes in an LLM system and what to cut. Traces cost per call path, finds retry storms, re-sent context, oversized system prompts, wasted reasoning tokens, and re-embedding that did not need to happen. Ranks fixes by dollars saved against risk taken, and says which expensive things to leave alone. Use when the invoice jumped, before a budget conversation, or when someone proposes a cheaper model to solve a problem that is not about the model.",
+      "license": "Released by Lawrence Jefferson II for public use.",
+      "md": "/skills/token-bill.SKILL.md",
+      "skill": "/skills/token-bill.skill",
+      "bytes": 14505
+    },
+    {
+      "name": "what-did-i-agree-to",
+      "version": "0.1.0",
+      "description": "Extract every commitment you made from a thread, transcript, or meeting notes — who you owe it to, by when, and which ones are dangerously vague. Separates what you actually promised from what someone may have heard as a promise. Use after a long email thread, a call you half-remember, a Slack channel you were tagged into, or any meeting that ended with \"great, sounds good.\"",
+      "license": "Released by Lawrence Jefferson II for public use.",
+      "md": "/skills/what-did-i-agree-to.SKILL.md",
+      "skill": "/skills/what-did-i-agree-to.skill",
+      "bytes": 8433
+    }
+  ]
+}

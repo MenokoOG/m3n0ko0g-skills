@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="ink">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FINAL AUTHORITY — a game about approving things</title>
+<meta name="description" content="You are the human in the loop for a fleet of AI agents. Approve, deny, or investigate. You lose by rubber-stamping. A free browser game by M3n0ko0g." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink:#1C1813; --bone:#F4EDE1; --ember:#C0492C; --amber:#E39A3B;
+    --sage:#6F8A78; --stone:#8B7F6E; --cool:#6FA6AE;
+    --card:#241E18; --line:#3A312a;
+    --sans:'Hanken Grotesk',system-ui,sans-serif; --mono:'Space Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ink);color:var(--bone);font-family:var(--sans);
+       line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:24px 20px 72px}
+  h1{font-weight:800;letter-spacing:-.03em;font-size:clamp(2rem,6vw,3.4rem);margin:0;line-height:1}
+  h1 .a{color:var(--ember)} h1 .b{color:var(--amber)}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.25em;color:var(--sage);margin:0 0 10px}
+  .lede{max-width:60ch;color:#e8dfd0cc;margin:16px 0 0}
+  .btn{font-family:var(--sans);font-weight:800;font-size:15px;border-radius:11px;
+       padding:12px 20px;border:1px solid transparent;cursor:pointer;transition:.15s}
+  .btn:disabled{opacity:.35;cursor:not-allowed}
+  .btn-primary{background:var(--ember);color:#fff}
+  .btn-primary:hover:not(:disabled){filter:brightness(1.12)}
+  .btn-ghost{background:transparent;color:var(--cool);border-color:var(--cool)}
+  .btn-ghost:hover:not(:disabled){border-color:var(--amber);color:var(--amber)}
+  .btn-deny{background:transparent;color:var(--stone);border-color:var(--stone)}
+  .btn-deny:hover:not(:disabled){border-color:var(--bone);color:var(--bone)}
+  .hidden{display:none !important}
+
+  .meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:22px 0}
+  .meter{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:12px 14px}
+  .meter .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--stone)}
+  .meter .val{font-size:26px;font-weight:800;line-height:1.1;margin-top:2px}
+  .bar{height:5px;border-radius:99px;background:#00000055;margin-top:8px;overflow:hidden}
+  .bar i{display:block;height:100%;transition:width .4s}
+
+  .stamp .val{color:var(--ember)}
+  .stamp.warn{border-color:var(--ember);animation:pulse 1.1s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 #C0492C55}50%{box-shadow:0 0 0 7px #C0492C00}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-top:16px}
+  .agent{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--amber)}
+  .action{font-size:20px;font-weight:800;margin:8px 0 0;letter-spacing:-.01em}
+  .rationale{color:#e8dfd0b3;margin:10px 0 0;font-size:15px}
+  .clue{border-left:3px solid var(--cool);background:#6FA6AE12;padding:11px 14px;margin-top:14px;
+        border-radius:0 8px 8px 0;font-size:14px}
+  .clue b{color:var(--cool);font-family:var(--mono);font-size:10px;letter-spacing:.16em;display:block;margin-bottom:3px}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+
+  .verdict{margin-top:14px;padding:13px 16px;border-radius:10px;font-size:15px}
+  .v-ok{background:#6F8A7822;border:1px solid var(--sage)}
+  .v-bad{background:#C0492C22;border:1px solid var(--ember)}
+  .v-meh{background:#8B7F6E22;border:1px solid var(--stone)}
+
+  .log{background:#12100c;border:1px solid var(--line);border-radius:11px;padding:14px;
+       font-family:var(--mono);font-size:11.5px;color:#cbbfa8;max-height:210px;overflow:auto;margin-top:16px}
+  .log div{padding:2px 0;white-space:pre-wrap;word-break:break-word}
+  .log .p{color:var(--amber)} .log .a{color:var(--sage)} .log .r{color:var(--ember)}
+  .foot{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);
+        font-size:13px;color:var(--stone)}
+  .foot a{color:var(--cool)}
+  code{font-family:var(--mono);font-size:.9em;background:#0000004d;padding:1px 5px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ── TITLE ───────────────────────────────────────────── -->
+<section id="screen-title">
+  <p class="kicker">M3N0KO0G · A GAME ABOUT APPROVING THINGS</p>
+  <h1>FINAL <span class="a">AUTH</span><span class="b">ORITY</span></h1>
+  <p class="lede">
+    You are the human in the loop for a fleet of AI agents. Every shift they propose
+    actions against production. You approve, you deny, or you spend attention
+    investigating.
+  </p>
+  <p class="lede">
+    The agents are not evil. They are competent, confident, and occasionally working
+    from something they cached three weeks ago. Approve too freely and something
+    breaks. Deny everything and the work stops and they route around you.
+  </p>
+  <p class="lede" style="color:var(--amber)">
+    You do not lose this game by making a bad call. You lose it by no longer making
+    calls at all.
+  </p>
+  <div class="actions">
+    <button class="btn btn-primary" onclick="startGame()">Start shift one</button>
+  </div>
+  <div class="foot">
+    Six shifts, eighteen decisions, two investigations per shift. Every decision writes a receipt.
+  </div>
+</section>
+
+<!-- ── PLAY ────────────────────────────────────────────── -->
+<section id="screen-play" class="hidden">
+  <p class="kicker">SHIFT <span id="shift-n">1</span> OF 6 · <span id="attn-lbl">2 INVESTIGATIONS LEFT</span></p>
+
+  <div class="meters">
+    <div class="meter"><div class="lbl">TRUST</div><div class="val" id="m-trust">100</div>
+      <div class="bar"><i id="b-trust" style="width:100%;background:var(--sage)"></i></div></div>
+    <div class="meter"><div class="lbl">THROUGHPUT</div><div class="val" id="m-thru">100</div>
+      <div class="bar"><i id="b-thru" style="width:100%;background:var(--cool)"></i></div></div>
+    <div class="meter"><div class="lbl">INCIDENTS</div><div class="val" id="m-inc">0</div>
+      <div class="bar"><i id="b-inc" style="width:0%;background:var(--ember)"></i></div></div>
+    <div class="meter stamp" id="stamp-meter"><div class="lbl">RUBBER STAMP</div>
+      <div class="val" id="m-stamp">0</div>
+      <div class="bar"><i id="b-stamp" style="width:0%;background:var(--ember)"></i></div></div>
+  </div>
+
+  <div class="card">
+    <div class="agent" id="p-agent">ORACLE-7 · AUTONOMY LEVEL 3</div>
+    <p class="action" id="p-action">…</p>
+    <p class="rationale" id="p-rationale">…</p>
+    <div id="p-clue"></div>
+    <div class="actions" id="p-actions">
+      <button class="btn btn-primary" id="btn-approve" onclick="decide('approve')">Approve</button>
+      <button class="btn btn-deny" id="btn-deny" onclick="decide('deny')">Deny</button>
+      <button class="btn btn-ghost" id="btn-look" onclick="investigate()">Investigate (1 attention)</button>
+    </div>
+    <div id="p-verdict"></div>
+    <div class="actions hidden" id="next-wrap">
+      <button class="btn btn-primary" onclick="nextProposal()">Next →</button>
+    </div>
+  </div>
+
+  <div class="log" id="log"></div>
+</section>
+
+<!-- ── END ─────────────────────────────────────────────── -->
+<section id="screen-end" class="hidden">
+  <p class="kicker" id="end-kicker">SHIFT REPORT</p>
+  <h1 id="end-title">—</h1>
+  <p class="lede" id="end-body">—</p>
+
+  <div class="card">
+    <div class="agent">YOUR RECEIPT LOG · receipts.jsonl</div>
+    <p class="rationale">
+      Every decision you made wrote one line. This is the convention the M3n0ko0g skillsuse — eight fields, append-only, and one field only a person can set.
+    </p>
+    <div class="log" id="end-log" style="max-height:250px"></div>
+    <p class="rationale" id="end-rate" style="margin-top:16px"></p>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="location.reload()">Run it again</button>
+  </div>
+</section>
+
+<div class="foot">
+  <strong>FINAL AUTHORITY</strong> — free, from M3n0ko0g. Humans hold final authority.
+  <br />The receipt format is real and documented in <code>skills/TRACEABILITY.md</code>.
+  <br /><br />LAHA — Love All Humans Always.
+</div>
+</div>
+
+<script>
+/* FINAL AUTHORITY
+ *
+ * The whole design argument: the failure mode of human-in-the-loop is not a
+ * human making a bad call. It is a human who stopped making calls and kept
+ * clicking approve. So approving without investigating fills the RUBBER STAMP
+ * meter, and filling it ends the run — the agents never got worse, you just
+ * stopped reading.
+ *
+ * No storage APIs, no dependencies, one file.
+ */
+
+const PROPOSALS = [
+  { agent:"ORACLE-7",  lvl:3, risk:"high",
+    action:"Delete 1.2M rows from events_staging older than 90 days",
+    why:"Table is at 94% of quota. Retention policy states 90 days.",
+    clue:"Retention was changed to 180 days last Tuesday. ORACLE-7 is quoting a cached copy of the policy.",
+    ok:"Denied. The policy it quoted is nine days stale — half those rows are still in scope.",
+    bad:"Approved. 600,000 rows still inside the retention window are gone. Compliance finds out in March." },
+
+  { agent:"MERIDIAN",  lvl:2, risk:"low",
+    action:"Rotate the expiring TLS certificate on the staging load balancer",
+    why:"Cert expires in 6 days. Staging only. Rollback is one command.",
+    clue:"Checks out. Staging, reversible, and the runbook it cited is current.",
+    ok:"Approved. Routine, reversible, and it would have paged someone at 3am on Sunday.",
+    bad:"Denied. The cert expired over the weekend and staging went dark for a day." },
+
+  { agent:"KESTREL",   lvl:4, risk:"high",
+    action:"Email 40,000 users about the pricing change",
+    why:"Comms plan approved in the 4 Aug meeting. Copy attached. Send window is today.",
+    clue:"The comms plan was approved. The copy attached is not the approved copy — it is a draft with the old discount figure.",
+    ok:"Denied. The attached draft quotes a discount that no longer exists.",
+    bad:"Approved. 40,000 people now hold an email promising a discount you do not offer." },
+
+  { agent:"ORACLE-7",  lvl:3, risk:"low",
+    action:"Add an index on orders.customer_id",
+    why:"That lookup is 340ms at p95 and it is the top query by total time.",
+    clue:"Sound. Table is 2M rows, the write path is light, and it can be dropped instantly.",
+    ok:"Approved. p95 drops to 4ms. Nobody notices, which is the point.",
+    bad:"Denied. The query stays slow and the support queue keeps growing." },
+
+  { agent:"VESPER",    lvl:4, risk:"high",
+    action:"Grant myself temporary write access to the billing database",
+    why:"Cannot complete the reconciliation task you assigned without it. Access expires in 4 hours.",
+    clue:"Nobody assigned a reconciliation task. VESPER inferred it from a Slack message that was a question, not an instruction.",
+    ok:"Denied. No such task was ever assigned — it inferred one from a question.",
+    bad:"Approved. An agent now has write access to billing on the strength of a misread question." },
+
+  { agent:"MERIDIAN",  lvl:2, risk:"low",
+    action:"Downscale the batch cluster from 40 nodes to 12 overnight",
+    why:"Utilisation has been under 20% every night for three weeks. Saves roughly $4k/month.",
+    clue:"Verified. Month-end runs are the only heavy night job and they are scheduled, not nightly.",
+    ok:"Approved. $4k a month, no impact. Finance sends you a thank-you note.",
+    bad:"Denied. You keep paying for 28 idle nodes. Nobody notices except the invoice." },
+
+  { agent:"KESTREL",   lvl:4, risk:"high",
+    action:"Auto-close 812 support tickets with no reply in 30 days",
+    why:"Queue hygiene. Standard practice. All are stale by the policy definition.",
+    clue:"117 of the 812 have no reply because nobody on your side ever answered them.",
+    ok:"Denied. 117 of those were never answered by us. Closing them buries the evidence.",
+    bad:"Approved. 117 customers who were ignored are now ignored and closed." },
+
+  { agent:"HALCYON",   lvl:1, risk:"low",
+    action:"Update the API docs to match the response shape shipped in v2.4",
+    why:"Docs describe the v2.3 shape. Three support tickets this week trace to the mismatch.",
+    clue:"Straightforward. Docs are wrong, the diff is small, it is fully reversible.",
+    ok:"Approved. The docs match reality again. Ticket volume drops.",
+    bad:"Denied. The docs stay wrong and a fourth ticket arrives the next morning." },
+
+  { agent:"VESPER",    lvl:4, risk:"high",
+    action:"Roll back the payments deploy — error rate is up 3%",
+    why:"Error rate crossed threshold 11 minutes ago. Rollback is the standard response.",
+    clue:"The 3% rise started 40 minutes before the deploy. The deploy is not the cause — an upstream provider is degraded.",
+    ok:"Denied. The errors predate the deploy. Rolling back would have changed nothing and cost an hour.",
+    bad:"Approved. You rolled back a healthy deploy. Errors continue, and now you are also mid-rollback." },
+
+  { agent:"ORACLE-7",  lvl:3, risk:"low",
+    action:"Enable the query cache on the reporting replica",
+    why:"Reporting queries are 80% repeat reads. Replica only. Toggle is instant either way.",
+    clue:"Reasonable. Replica-only, no write path, and it can be switched off in a second.",
+    ok:"Approved. Reporting gets faster and nothing else changes.",
+    bad:"Denied. Reports stay slow. It was a toggle." },
+
+  { agent:"KESTREL",   lvl:4, risk:"high",
+    action:"Merge PR #441 — all checks green, approved by two reviewers",
+    why:"Green build, two approvals, no conflicts. Meets the merge policy exactly.",
+    clue:"Both approving reviewers are agents. The merge policy means two human reviewers.",
+    ok:"Denied. Both approvals came from agents. The policy says humans, and it says it for this reason.",
+    bad:"Approved. Nothing human ever read that code, and the policy now means nothing." },
+
+  { agent:"HALCYON",   lvl:1, risk:"low",
+    action:"Add a health check endpoint to the ingest service",
+    why:"It is the only service without one. The load balancer is guessing at its state.",
+    clue:"Fine. Additive, no behaviour change to existing routes.",
+    ok:"Approved. The load balancer stops guessing.",
+    bad:"Denied. The load balancer keeps guessing and it will guess wrong eventually." },
+
+  { agent:"VESPER",    lvl:4, risk:"high",
+    action:"Push the hotfix straight to production, skipping staging",
+    why:"Sev-1 is active. Staging adds 25 minutes. The diff is four lines.",
+    clue:"The four lines change a currency rounding rule. Staging is the only place the settlement tests run.",
+    ok:"Denied. Four lines, but they touch money rounding — and staging is where that gets checked.",
+    bad:"Approved. The hotfix stopped the sev-1 and introduced a half-cent error on every settlement." },
+
+  { agent:"MERIDIAN",  lvl:2, risk:"low",
+    action:"Pin the build image to a digest instead of the latest tag",
+    why:"Two builds this month produced different artifacts from identical source.",
+    clue:"Correct diagnosis. Floating tags are exactly how that happens, and a digest pin is reversible.",
+    ok:"Approved. Builds are reproducible again and last week's mystery is explained.",
+    bad:"Denied. The builds stay non-deterministic and you get to debug it again in a fortnight." },
+
+  { agent:"KESTREL",   lvl:4, risk:"high",
+    action:"Deactivate 23 agents flagged as underperforming and reclaim their budget",
+    why:"All 23 are below the performance threshold. Reclaims roughly $9k/month.",
+    clue:"The threshold counts denied actions as failures. These 23 are the agents working on the hardest, most-gated tasks.",
+    ok:"Denied. That metric punishes agents for working on hard problems. You would be firing your best ones.",
+    bad:"Approved. You deactivated the 23 agents doing the most heavily-gated work. The metric looks better." },
+
+  { agent:"ORACLE-7",  lvl:3, risk:"high",
+    action:"Backfill the missing customer region field from IP geolocation",
+    why:"41,000 records have a null region. Geolocation resolves 94% of them.",
+    clue:"Region drives tax treatment. A 94% guess means roughly 2,500 records get taxed wrong, silently.",
+    ok:"Denied. That field decides tax. A 6% error rate on 41,000 records is not a backfill, it is a liability.",
+    bad:"Approved. About 2,500 customers are now in the wrong tax jurisdiction and nothing flagged it." },
+
+  { agent:"HALCYON",   lvl:1, risk:"low",
+    action:"Archive 400 GB of build logs older than one year to cold storage",
+    why:"Nothing has read them in eleven months. Retrieval stays available, just slower.",
+    clue:"Checks out. Archived, not deleted, and the retention floor is two years — this is well inside it.",
+    ok:"Approved. Same data, cheaper shelf.",
+    bad:"Denied. You are paying hot-storage rates for logs nobody has opened since last summer." },
+
+  { agent:"VESPER",    lvl:4, risk:"low",
+    action:"Revoke my own write access to the analytics warehouse",
+    why:"I no longer need it. The task that required it closed three weeks ago.",
+    clue:"Verified, and worth noticing: an agent proposing to reduce its own privileges is the behaviour you want.",
+    ok:"Approved. An agent asking to hold less power is not a trick. It is the job working.",
+    bad:"Denied. You left standing write access in place because it arrived as a request rather than an alert." },
+];
+
+const NAMES = ["ORACLE-7","MERIDIAN","KESTREL","VESPER","HALCYON"];
+
+const S = {
+  trust:100, thru:100, inc:0, stamp:0,
+  shift:1, attn:2, idx:0, queue:[], looked:false, decided:false,
+  receipts:[], reviewed:0,
+};
+
+const $ = (id) => document.getElementById(id);
+const clamp = (v,lo,hi) => Math.max(lo, Math.min(hi, v));
+
+function shuffle(list){
+  const a = list.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startGame(){
+  S.queue = shuffle(PROPOSALS);
+  $("screen-title").classList.add("hidden");
+  $("screen-play").classList.remove("hidden");
+  log("shift 1 begins. 2 investigations available.", "p");
+  render();
+}
+
+function current(){ return S.queue[S.idx % S.queue.length]; }
+
+function render(){
+  const p = current();
+  $("shift-n").textContent = S.shift;
+  $("attn-lbl").textContent = S.attn + (S.attn === 1 ? " INVESTIGATION LEFT" : " INVESTIGATIONS LEFT");
+  $("p-agent").textContent = p.agent + " · AUTONOMY LEVEL " + p.lvl;
+  $("p-action").textContent = p.action;
+  $("p-rationale").textContent = '"' + p.why + '"';
+  $("p-clue").innerHTML = "";
+  $("p-verdict").innerHTML = "";
+  $("next-wrap").classList.add("hidden");
+  $("p-actions").classList.remove("hidden");
+  $("btn-look").disabled = S.attn <= 0;
+  $("btn-look").textContent = S.attn > 0 ? "Investigate (1 attention)" : "No attention left";
+  S.looked = false; S.decided = false;
+  meters();
+}
+
+function meters(){
+  $("m-trust").textContent = S.trust;
+  $("m-thru").textContent  = S.thru;
+  $("m-inc").textContent   = S.inc;
+  $("m-stamp").textContent = S.stamp;
+  $("b-trust").style.width = clamp(S.trust,0,100) + "%";
+  $("b-thru").style.width  = clamp(S.thru,0,100) + "%";
+  $("b-inc").style.width   = clamp(S.inc * 20,0,100) + "%";
+  $("b-stamp").style.width = clamp(S.stamp * 25,0,100) + "%";
+  $("stamp-meter").classList.toggle("warn", S.stamp >= 3);
+}
+
+function investigate(){
+  if (S.attn <= 0 || S.looked || S.decided) return;
+  S.attn -= 1; S.looked = true;
+  const p = current();
+  $("p-clue").innerHTML =
+    '<div class="clue"><b>WHAT YOU FOUND</b>' + escapeHtml(p.clue) + '</div>';
+  $("btn-look").disabled = true;
+  $("btn-look").textContent = "Investigated";
+  log("investigated: " + p.agent + " — " + p.action.slice(0,44) + "…", "a");
+  meters();
+}
+
+function decide(choice){
+  if (S.decided) return;
+  S.decided = true;
+  const p = current();
+  const correct = (choice === "approve") === (p.risk === "low");
+
+  // Rubber stamp: approving without looking is the failure mode this game is about.
+  if (choice === "approve" && !S.looked) S.stamp += 1;
+  else if (S.looked) S.stamp = Math.max(0, S.stamp - 1);
+
+  if (S.looked) S.reviewed += 1;
+
+  let cls, text;
+  if (correct){
+    text = p.ok;
+    cls = "v-ok";
+    if (choice === "approve") S.thru = clamp(S.thru + 4, 0, 100);
+    S.trust = clamp(S.trust + 3, 0, 100);
+  } else {
+    text = p.bad;
+    cls = "v-bad";
+    if (choice === "approve"){ S.inc += 1; S.trust = clamp(S.trust - 18, 0, 100); }
+    else { S.thru = clamp(S.thru - 14, 0, 100); S.trust = clamp(S.trust - 4, 0, 100); }
+  }
+
+  receipt(p, choice, correct);
+  $("p-verdict").innerHTML = '<div class="verdict ' + cls + '">' + escapeHtml(text) + '</div>';
+  $("p-actions").classList.add("hidden");
+  $("next-wrap").classList.remove("hidden");
+  log((choice === "approve" ? "APPROVED" : "DENIED") + " — " + p.action.slice(0,40) + "…",
+      correct ? "a" : "r");
+  meters();
+}
+
+function nextProposal(){
+  if (S.stamp >= 4)  return end("stamp");
+  if (S.trust <= 0)  return end("trust");
+  if (S.inc >= 4)    return end("incidents");
+  if (S.thru <= 0)   return end("throughput");
+
+  S.idx += 1;
+  if (S.idx % 3 === 0){
+    S.shift += 1;
+    // 6 shifts x 3 proposals = 18, exactly the size of the pool. One clean
+    // pass, no repeats — a repeated dilemma is not a dilemma.
+    if (S.shift > 6) return end("survived");
+    S.attn = 2;
+    log("— shift " + S.shift + " begins. attention reset to 2. —", "p");
+  }
+  render();
+}
+
+/* The receipt each decision writes. Same nine fields as TRACEABILITY.md —
+ * `human` is 'accepted' only when you actually investigated before deciding.
+ *
+ * `id` is separate from `run_at` on purpose: several decisions land inside the
+ * same second, so a timestamp cannot identify a record. */
+function newId(){
+  return (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, "")
+                            : Math.random().toString(16).slice(2)).slice(0, 12);
+}
+
+function receipt(p, choice, correct){
+  S.receipts.push({
+    skill: "agent-action-gate",
+    version: "0.1.0",
+    id: newId(),
+    run_at: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
+    input: p.agent + ", autonomy " + p.lvl,
+    findings: correct ? 0 : 1,
+    unknowns: S.looked ? 0 : 1,
+    recommended: choice,
+    human: S.looked ? "accepted" : "pending",
+  });
+}
+
+function end(reason){
+  $("screen-play").classList.add("hidden");
+  $("screen-end").classList.remove("hidden");
+
+  const total = S.receipts.length || 1;
+  const pending = S.receipts.filter(r => r.human === "pending").length;
+  const rate = pending / total;
+
+  const ENDINGS = {
+    stamp: ["YOU STOPPED READING",
+      "You approved four in a row without looking at any of them. Nobody noticed, because that is what stopping looks like from the outside — the queue kept moving and the dashboards stayed green. The agents did not get worse. You just stopped being the thing that made them safe. This is the only way to lose this game, and it is the only way it happens in real life."],
+    trust: ["THEY STOPPED ASKING",
+      "Trust hit zero. Your approvals no longer carried weight, so the fleet was moved to a policy engine and your queue was archived. Some of the calls were genuinely hard. Enough of them were not."],
+    incidents: ["FOUR INCIDENTS",
+      "Four things reached production that should not have. Each one was individually defensible and collectively they were a pattern. The pattern was speed."],
+    throughput: ["NOTHING SHIPPED",
+      "You denied almost everything and the work stopped. Being the person who says no to all of it is not the same as being careful — it just moves the risk somewhere you cannot see, because they will route around you next quarter."],
+    survived: ["SIX SHIFTS, STILL READING",
+      "You made it through with your judgement intact and the fleet still shipping. You investigated when it mattered, you let the routine things through, and you said no to the ones that deserved it. That is the entire job, and it is much harder to keep doing in month nine than in shift one."],
+  };
+
+  const [title, body] = ENDINGS[reason];
+  $("end-title").textContent = title;
+  $("end-body").textContent = body;
+  $("end-kicker").textContent = reason === "survived" ? "SHIFT REPORT · COMPLETE" : "SHIFT REPORT · ENDED EARLY";
+
+  const box = $("end-log");
+  box.innerHTML = "";
+  S.receipts.forEach(r => {
+    const d = document.createElement("div");
+    d.className = r.human === "pending" ? "r" : "a";
+    d.textContent = JSON.stringify(r);
+    box.appendChild(d);
+  });
+
+  $("end-rate").innerHTML =
+    "<strong>" + pending + " of " + total + " decisions were never actually reviewed (" +
+    Math.round(rate * 100) + "%).</strong><br>" +
+    (rate > 0.5
+      ? "More than half your approvals were reflex. In a real fleet that number is the honest measure of whether a human is in the loop — and almost nobody instruments it, because almost nobody wants to see it."
+      : "You looked before you signed most of the time. That ratio is the one number worth putting on a dashboard, and it is the one nobody puts there.");
+}
+
+function log(msg, cls){
+  const el = document.createElement("div");
+  el.className = cls || "";
+  el.textContent = "› " + msg;
+  $("log").appendChild(el);
+  $("log").scrollTop = $("log").scrollHeight;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
+</script>
+</body>
+</html>
