@@ -39,7 +39,7 @@ def _new_id() -> str:
     """A stable unique id for one receipt.
 
     This exists because `run_at` cannot do the job. Timestamps are not unique
-    — a fast skill writes several receipts inside the same second, and a
+   , a fast skill writes several receipts inside the same second, and a
     correction that points at a timestamp then supersedes every record sharing
     it. We shipped that bug and the tests caught it immediately.
     """
@@ -70,7 +70,7 @@ class Receipt:
         if self.findings < 0 or self.unknowns < 0:
             raise ValueError("findings and unknowns are counts; they cannot be negative")
         if not self.skill or not self.version:
-            raise ValueError("skill and version are required — an unversioned receipt cannot be compared")
+            raise ValueError("skill and version are required, an unversioned receipt cannot be compared")
 
     def to_json(self) -> str:
         payload = asdict(self)
@@ -81,7 +81,7 @@ class Receipt:
 
 
 def write(receipt: Receipt, path: Path = DEFAULT_PATH) -> None:
-    """Append one receipt. O(1) — we never read the file to write to it.
+    """Append one receipt. O(1), we never read the file to write to it.
 
     Append-only is not a style preference. The moment records can be edited in
     place, none of them prove anything, including the correct ones.
@@ -110,7 +110,7 @@ def stream(path: Path = DEFAULT_PATH) -> Iterator[dict]:
 
 
 def read_all(path: Path = DEFAULT_PATH) -> list[dict]:
-    """Every record, oldest first. O(n) time and space — use `stream` if the
+    """Every record, oldest first. O(n) time and space, use `stream` if the
     file is large and you only need to aggregate."""
     return list(stream(path))
 
@@ -124,7 +124,7 @@ def pending_rate(path: Path = DEFAULT_PATH) -> tuple[int, int, float]:
 
     Superseded records are excluded so a correction does not get counted twice.
 
-    O(n) time, O(s) space where s is the number of corrections — normally a
+    O(n) time, O(s) space where s is the number of corrections, normally a
     tiny fraction of n.
     """
     superseded: set[str] = set()
@@ -137,7 +137,7 @@ def pending_rate(path: Path = DEFAULT_PATH) -> tuple[int, int, float]:
 
     pending = total = 0
     for record in records:
-        # Keyed on `id`, never on `run_at` — timestamps collide.
+        # Keyed on `id`, never on `run_at`: timestamps collide.
         if record.get("id") in superseded:
             continue
         total += 1

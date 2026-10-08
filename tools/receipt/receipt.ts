@@ -11,7 +11,7 @@
  *
  * Note `pendingRate` builds a Set of superseded ids rather than calling
  * `.includes()` on an array inside the loop. That would be the textbook
- * accidental quadratic — and shipping one inside the traceability tool for a
+ * accidental quadratic, and shipping one inside the traceability tool for a
  * repo containing `hot-path` would be embarrassing.
  */
 
@@ -48,7 +48,7 @@ function utcNow(): string {
 
 /** A stable unique id for one receipt.
  *
- *  This exists because `run_at` cannot do the job. Timestamps are not unique —
+ *  This exists because `run_at` cannot do the job. Timestamps are not unique,
  *  a fast skill writes several receipts inside the same second, and a
  *  correction pointing at a timestamp then supersedes every record sharing it.
  *  We shipped that bug and the tests caught it immediately. */
@@ -61,7 +61,7 @@ export function makeReceipt(
     Partial<Pick<Receipt, "human" | "run_at" | "id">>,
 ): Receipt {
   if (!fields.skill || !fields.version) {
-    throw new Error("skill and version are required — an unversioned receipt cannot be compared");
+    throw new Error("skill and version are required, an unversioned receipt cannot be compared");
   }
   if (fields.findings < 0 || fields.unknowns < 0) {
     throw new Error("findings and unknowns are counts; they cannot be negative");
@@ -69,7 +69,7 @@ export function makeReceipt(
   return { human: "pending", run_at: utcNow(), id: newId(), ...fields };
 }
 
-/** Append one receipt. O(1) — the file is never read in order to write it.
+/** Append one receipt. O(1): the file is never read in order to write it.
  *
  *  Append-only is not a style preference. The moment records can be edited in
  *  place, none of them prove anything, including the correct ones. */
@@ -119,7 +119,7 @@ export interface PendingReport {
 export async function pendingRate(path = DEFAULT_PATH): Promise<PendingReport> {
   const records = await readAll(path);
 
-  // Set, not an array — `.includes()` inside the loop below would be O(n^2).
+  // Set, not an array: `.includes()` inside the loop below would be O(n^2).
   const superseded = new Set<string>();
   for (const record of records) {
     if (record.supersedes) superseded.add(record.supersedes);
@@ -128,7 +128,7 @@ export async function pendingRate(path = DEFAULT_PATH): Promise<PendingReport> {
   let pending = 0;
   let total = 0;
   for (const record of records) {
-    // Keyed on `id`, never on `run_at` — timestamps collide.
+    // Keyed on `id`, never on `run_at`: timestamps collide.
     if (superseded.has(record.id)) continue;
     total += 1;
     if ((record.human ?? "pending") === "pending") pending += 1;
