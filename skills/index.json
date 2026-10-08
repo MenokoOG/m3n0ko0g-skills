@@ -25,11 +25,11 @@
     {
       "name": "agent-gate-review",
       "version": "0.1.0",
-      "description": "Review an AI agent or agentic system for the five controls that decide whether it is safe to give real authority — registration, validation, revocation, escalation, and human-in-the-loop. Produces a gate-by-gate report with concrete failure scenarios, not a compliance checklist. Use before an agent is granted write access, spend authority, customer contact, or any action that cannot be undone.",
+      "description": "Review an AI agent or agentic system for the five controls that decide whether it is safe to give real authority, registration, validation, revocation, escalation, and human-in-the-loop. Produces a gate-by-gate report with concrete failure scenarios, not a compliance checklist. Use before an agent is granted write access, spend authority, customer contact, or any action that cannot be undone.",
       "license": "Released by Lawrence Jefferson II for public use.",
       "md": "/skills/agent-gate-review.SKILL.md",
       "skill": "/skills/agent-gate-review.skill",
-      "bytes": 9086
+      "bytes": 8993
     },
     {
       "name": "data-in-the-prompt",
@@ -56,7 +56,7 @@
       "license": "Released by Lawrence Jefferson II for public use.",
       "md": "/skills/hot-path.SKILL.md",
       "skill": "/skills/hot-path.skill",
-      "bytes": 10310
+      "bytes": 10250
     },
     {
       "name": "incident-replay",
@@ -70,11 +70,11 @@
     {
       "name": "legacy-modernization-scout",
       "version": "0.1.0",
-      "description": "Map a legacy system for incremental modernization — inventory the surfaces, find the seams where a facade can be inserted, rank strangler-fig slices by value against reversibility, and design the adapter interfaces between old and new. Produces a written scout report with an explicit register of what is still unknown. Use before committing to any rewrite, replatform, or \"we'll just rebuild it\" decision.",
+      "description": "Map a legacy system for incremental modernization, inventory the surfaces, find the seams where a facade can be inserted, rank strangler-fig slices by value against reversibility, and design the adapter interfaces between old and new. Produces a written scout report with an explicit register of what is still unknown. Use before committing to any rewrite, replatform, or \"we'll just rebuild it\" decision.",
       "license": "Released by Lawrence Jefferson II for public use.",
       "md": "/skills/legacy-modernization-scout.SKILL.md",
       "skill": "/skills/legacy-modernization-scout.skill",
-      "bytes": 9194
+      "bytes": 9095
     },
     {
       "name": "model-swap-blast-radius",
@@ -124,11 +124,11 @@
     {
       "name": "what-did-i-agree-to",
       "version": "0.1.0",
-      "description": "Extract every commitment you made from a thread, transcript, or meeting notes — who you owe it to, by when, and which ones are dangerously vague. Separates what you actually promised from what someone may have heard as a promise. Use after a long email thread, a call you half-remember, a Slack channel you were tagged into, or any meeting that ended with \"great, sounds good.\"",
+      "description": "Extract every commitment you made from a thread, transcript, or meeting notes, who you owe it to, by when, and which ones are dangerously vague. Separates what you actually promised from what someone may have heard as a promise. Use after a long email thread, a call you half-remember, a Slack channel you were tagged into, or any meeting that ended with \"great, sounds good.\"",
       "license": "Released by Lawrence Jefferson II for public use.",
       "md": "/skills/what-did-i-agree-to.SKILL.md",
       "skill": "/skills/what-did-i-agree-to.skill",
-      "bytes": 8433
+      "bytes": 8373
     }
   ]
 }

@@ -1,7 +1,7 @@
 ---
 name: what-did-i-agree-to
 version: 0.1.0
-description: Extract every commitment you made from a thread, transcript, or meeting notes — who you owe it to, by when, and which ones are dangerously vague. Separates what you actually promised from what someone may have heard as a promise. Use after a long email thread, a call you half-remember, a Slack channel you were tagged into, or any meeting that ended with "great, sounds good."
+description: Extract every commitment you made from a thread, transcript, or meeting notes, who you owe it to, by when, and which ones are dangerously vague. Separates what you actually promised from what someone may have heard as a promise. Use after a long email thread, a call you half-remember, a Slack channel you were tagged into, or any meeting that ended with "great, sounds good."
 license: Released by Lawrence Jefferson II for public use.
 ---
 
@@ -11,7 +11,7 @@ Most dropped balls are not forgotten tasks. They are sentences that sounded like
 
 "I'll take a look at that" is not a promise. It is also, reliably, received as one.
 
-This skill reads a thread, a transcript, or a pile of notes, and gives you back what you are now on the hook for — including the parts you would not have written down, because you did not notice you had agreed to them.
+This skill reads a thread, a transcript, or a pile of notes, and gives you back what you are now on the hook for, including the parts you would not have written down, because you did not notice you had agreed to them.
 
 **Operating law:** *unknown data must increase decision discipline, not model confidence.* Where no date was stated, this skill says "no date stated." It never invents a deadline, never upgrades a maybe into a yes, and never guesses at an owner. A fabricated due date is worse than no due date, because you will trust it.
 
@@ -25,45 +25,45 @@ Do not use it as a task manager. It extracts commitments; it does not track them
 
 ## What counts as a commitment
 
-A commitment is a future action attributable to a specific person. It has three parts, and any of them may be missing from the source — which is itself the useful finding.
+A commitment is a future action attributable to a specific person. It has three parts, and any of them may be missing from the source, which is itself the useful finding.
 
 **The action.** What will be done. Vague verbs are a warning sign: "look into", "circle back on", "think about", "get some clarity on". These get flagged rather than dropped, because vague verbs are precisely where expectations diverge.
 
 **The owner.** Who does it. "We should" almost never means "I will," and it is one of the most common sources of a task that nobody picks up. If a commitment is phrased in the collective and never assigned, that is a finding.
 
-**The deadline.** When. Note the difference between a stated date ("by Thursday"), a relative date ("end of next week" — resolve it only if the source is dated, and say what you resolved it against), a soft date ("soon", "shortly", "once the other thing lands"), and no date at all. Never promote a soft date to a hard one.
+**The deadline.** When. Note the difference between a stated date ("by Thursday"), a relative date ("end of next week", resolve it only if the source is dated, and say what you resolved it against), a soft date ("soon", "shortly", "once the other thing lands"), and no date at all. Never promote a soft date to a hard one.
 
 ## The method
 
-### Step 1 — Establish who "I" is
+### Step 1: Establish who "I" is
 
 Ask, or determine from the source, whose commitments are being extracted. In a thread with six people this is the whole basis of the analysis, and getting it wrong makes the output worse than useless.
 
-Also note the date of the source. Without it, every relative deadline stays unresolved — and it should.
+Also note the date of the source. Without it, every relative deadline stays unresolved, and it should.
 
-### Step 2 — Read for commitment language, not for topics
+### Step 2: Read for commitment language, not for topics
 
 Go through the source in order and mark every future-tense statement, every acceptance of a request, and every silence that followed a direct ask.
 
 That last one matters. When somebody writes "can you have that to me by Friday?" and the reply is about something else entirely, no commitment was made and no refusal was given either. That is an open loop, and open loops belong in the output.
 
-### Step 3 — Sort into four buckets
+### Step 3: Sort into four buckets
 
 **You committed.** Clear, attributable, future action by you. Include the quote.
 
-**Others committed to you.** The reverse — things you are waiting on. These are what you chase, and people consistently forget to track them.
+**Others committed to you.** The reverse, things you are waiting on. These are what you chase, and people consistently forget to track them.
 
 **Ambiguous.** You said something that could reasonably be read as a commitment and could reasonably be read as musing. This is the highest-value bucket in the whole output. For each one, give the quote, say how it could be read both ways, and name the person most likely to be holding you to it.
 
 **Open loops.** A direct ask that was never answered either way.
 
-### Step 4 — Quote, never paraphrase
+### Step 4: Quote, never paraphrase
 
-Every item carries the source quote verbatim. Paraphrase is how a soft statement quietly becomes a hard one between the source and the summary — which is exactly the failure this skill exists to prevent.
+Every item carries the source quote verbatim. Paraphrase is how a soft statement quietly becomes a hard one between the source and the summary, which is exactly the failure this skill exists to prevent.
 
 If the source is long, cite location as well: message number, timestamp, or speaker turn.
 
-### Step 5 — Do not resolve the ambiguity for them
+### Step 5: Do not resolve the ambiguity for them
 
 It is not this skill's job to decide whether "I'll take a look" was a yes. It is this skill's job to surface that the question exists and let a person answer it.
 
@@ -74,7 +74,7 @@ Where an ambiguous item looks consequential, suggest the one-line message that w
 ```
 SOURCE     #product-launch, 47 messages, 3–7 Aug 2026
 YOU        Dana Okafor
-DATED      Yes — relative deadlines resolved against 7 Aug
+DATED      Yes, relative deadlines resolved against 7 Aug
 
 YOU COMMITTED (3)
 
@@ -99,15 +99,15 @@ WAITING ON YOU FROM OTHERS (1)
      Where     msg 29
      Note      This blocks your item 1. Chase it before Monday.
 
-AMBIGUOUS — READ THESE FIRST (2)
+AMBIGUOUS: READ THESE FIRST (2)
 
   1. "I can probably pull the Q3 numbers together too"
      Where     msg 38
      Reads as  Musing about capacity, if you wrote it.
-     Reads as  A yes, if Priya read it — she replied "amazing, thank you!"
+     Reads as  A yes, if Priya read it, she replied "amazing, thank you!"
                and has not mentioned it since.
      Held by   Priya Raman
-     Settle    "Just to check — did you want the Q3 numbers from me, and
+     Settle    "Just to check, did you want the Q3 numbers from me, and
                by when?"
 
 OPEN LOOPS (1)
@@ -119,7 +119,7 @@ OPEN LOOPS (1)
 
 Lead with `YOU COMMITTED` because it is what people came for. Put `AMBIGUOUS` above `OPEN LOOPS` because it is where the damage actually happens.
 
-If a bucket is empty, print it with `(none)`. An empty ambiguity list is information — it means the thread was unusually clear, and that is worth knowing.
+If a bucket is empty, print it with `(none)`. An empty ambiguity list is information, it means the thread was unusually clear, and that is worth knowing.
 
 ## Run record
 
@@ -129,7 +129,7 @@ Every run emits a receipt, per `TRACEABILITY.md` in this repository.
 --- M3n0ko0g skill receipt ---
 skill:       what-did-i-agree-to
 version:     0.1.0
-id:          <12 random hex chars — corrections point at this, never at run_at>
+id:          <12 random hex chars, corrections point at this, never at run_at>
 run_at:      <ISO-8601 UTC>
 input:       <source type>, <n> messages, <date range>   # shape only, never content
 findings:    committed=<n> waiting=<n> ambiguous=<n> open=<n>
@@ -139,7 +139,7 @@ human:       <pending | accepted | rejected>
 ---
 ```
 
-The receipt never contains message content. It records that a run happened, over how much, and what it produced. Anyone auditing later can see the shape of the work without reading a private thread — which is the difference between telemetry and surveillance.
+The receipt never contains message content. It records that a run happened, over how much, and what it produced. Anyone auditing later can see the shape of the work without reading a private thread, which is the difference between telemetry and surveillance.
 
 ## Rules
 
@@ -159,4 +159,4 @@ If the source is missing a date and contains relative deadlines, say that resolu
 
 Part of the free skills library by M3n0ko0g.
 
-LAHA — Love All Humans Always.
+LAHA: Love All Humans Always.
