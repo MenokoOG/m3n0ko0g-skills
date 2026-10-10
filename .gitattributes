@@ -1,3 +1,8 @@
+# Catch-all first, so the specific rules below override it. Git leaves files
+# that are already CRLF in the index alone under text=auto, so this does not
+# rewrite the existing fixtures.
+* text=auto eol=lf
+
 # .skill bundles are zip archives. Never let line-ending conversion near them.
 *.skill binary
 *.zip binary
