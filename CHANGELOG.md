@@ -7,6 +7,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ### Changed
 
+- Agent project files (`PROJECT.md`, `log/`) are no longer tracked. They stay local and are listed in `.git/info/exclude`. Earlier commits still hold them in history.
 - Removed em dashes from skills, docs, code comments and the game. Bundles and `index.json` rebuilt.
 - Two earlier skills repositories are merged into
   this one. The repository carries the 12 skills, the MCP server, both scouts,
