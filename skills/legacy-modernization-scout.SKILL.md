@@ -117,6 +117,28 @@ The scout report is wrong when it reads as confident and complete. If the Unknow
 
 A good scout report is uncomfortable to read. It says what nobody has confirmed.
 
+## Run record
+
+Every run ends with a receipt, per `TRACEABILITY.md` in this repository.
+
+```
+--- M3n0ko0g skill receipt ---
+skill:       legacy-modernization-scout
+version:     0.1.0
+id:          <12 random hex chars, corrections point at this, never at run_at>
+run_at:      <ISO-8601 UTC>
+input:       <n> surfaces, <n> files   # shape only, never source text
+slices:      <n> ranked, <n> seams rejected as false
+unknowns:    <n>
+recommended: <single next step, one line>
+human:       <pending | accepted | rejected>
+---
+```
+
+Never put source code, credentials, or customer data in the receipt.
+
+`human` starts at `pending` and is only ever set by a person.
+
 ---
 
 Part of the free skills library by M3n0ko0g.
