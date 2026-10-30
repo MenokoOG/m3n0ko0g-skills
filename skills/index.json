@@ -29,7 +29,7 @@
       "license": "Released by Lawrence Jefferson II for public use.",
       "md": "/skills/agent-gate-review.SKILL.md",
       "skill": "/skills/agent-gate-review.skill",
-      "bytes": 8993
+      "bytes": 9668
     },
     {
       "name": "data-in-the-prompt",
@@ -74,7 +74,7 @@
       "license": "Released by Lawrence Jefferson II for public use.",
       "md": "/skills/legacy-modernization-scout.SKILL.md",
       "skill": "/skills/legacy-modernization-scout.skill",
-      "bytes": 9095
+      "bytes": 9755
     },
     {
       "name": "model-swap-blast-radius",

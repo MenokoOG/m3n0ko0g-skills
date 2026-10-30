@@ -25,8 +25,17 @@ jobs:
           python-version: ${{ matrix.python }}
 
       # No npm install. There are no dependencies, and CI proves it.
+      - name: skills have valid structure
+        run: npm run validate:skills
+
       - name: skills are packaged and current
         run: npm run check:skills
+
+      - name: README skill index is current
+        run: npm run check:index
+
+      - name: validator and index generator behave
+        run: npm run test:skill-tools
 
       - name: MCP server speaks the protocol
         run: npm run test:mcp

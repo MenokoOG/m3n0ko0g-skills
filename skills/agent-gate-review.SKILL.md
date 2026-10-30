@@ -103,6 +103,28 @@ The review is wrong when every gate reads Enforced. Five green gates on a system
 
 It is also wrong when it produces twenty findings of equal weight. Rank by blast radius. An Advisory rating on a gate protecting a read-only summary is not the same as an Absent rating on a gate protecting money movement, and a report that treats them alike will get all of them ignored.
 
+## Run record
+
+Every run ends with a receipt, per `TRACEABILITY.md` in this repository.
+
+```
+--- M3n0ko0g skill receipt ---
+skill:       agent-gate-review
+version:     0.1.0
+id:          <12 random hex chars, corrections point at this, never at run_at>
+run_at:      <ISO-8601 UTC>
+input:       <n> agents, <n> actions under review   # shape only, never prompt or tool output
+gates:       <n> Enforced / <n> Advisory / <n> Absent
+unknowns:    <n>
+recommended: <single next step, one line>
+human:       <pending | accepted | rejected>
+---
+```
+
+Never put prompt text, credentials, or customer data in the receipt.
+
+`human` starts at `pending` and is only ever set by a person.
+
 ---
 
 Part of the free skills library by M3n0ko0g.

@@ -11,9 +11,13 @@
   "scripts": {
     "build:skills": "node scripts/build-skills.mjs",
     "check:skills": "node scripts/build-skills.mjs --check",
+    "build:index": "node scripts/build-readme-index.mjs",
+    "check:index": "node scripts/build-readme-index.mjs --check",
+    "validate:skills": "node scripts/validate-skills.mjs",
+    "test:skill-tools": "node scripts/test-skill-tools.mjs",
     "test:mcp": "node mcp/test-server.mjs",
     "test:scouts": "node scouts/typescript/test-m3scout.mjs && python scouts/python/test_m3scout.py",
-    "test": "npm run check:skills && npm run test:mcp && npm run test:scouts"
+    "test": "npm run validate:skills && npm run check:skills && npm run check:index && npm run test:skill-tools && npm run test:mcp && npm run test:scouts"
   },
   "repository": {
     "type": "git",

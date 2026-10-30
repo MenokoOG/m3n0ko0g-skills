@@ -45,7 +45,7 @@ Read two existing skills before writing one. `rag-integrity-check` and `incident
 
 ### 3. The receipt requirement
 
-Every skill ends its run by emitting a receipt. Put the block in a section called `## Run record`. The six common fields are required and may not be removed. Add skill-specific result fields between `input` and `unknowns`.
+Every skill ends its run by emitting a receipt. Put the block in a section called `## Run record`. The core fields `skill`, `version`, `id`, `run_at` and `human` are required and may not be removed. `input`, `unknowns` and `recommended` are expected, and the validator warns when one is missing. Add skill-specific result fields between `input` and `unknowns`.
 
 ```
 --- M3n0ko0g skill receipt ---
@@ -74,9 +74,13 @@ A skill whose example output has an empty Unknowns section will be sent back.
 ### 5. Build and test
 
 ```bash
+npm run validate:skills # structure check: frontmatter, receipt, footer, duplicates, links
 npm run build:skills    # writes skills/<name>.skill, index.json, and the two bundles
-npm test                # check:skills, the MCP protocol test, both scout suites
+npm run build:index     # regenerates the skill index table in README.md
+npm test                # validator, check:skills, check:index, the MCP protocol test, both scout suites
 ```
+
+`validate:skills` fails on a missing field, a name that does not match the filename, a missing `## Run record` or receipt field, a missing footer, an em dash, a duplicate name or description, or a dead relative link. Fix it before you open the PR. Never hand-edit the table between the `skills-index` markers in the README. It is generated from your frontmatter, so the first sentence of `description` is what readers see in the index.
 
 Commit the generated `.skill`, `index.json`, `m3scout.zip` and `m3n0ko0g-skills-mcp.zip` alongside your SKILL.md. CI runs `check:skills`, which fails if any of them is stale. The build pins zip timestamps so the bytes are stable across machines.
 
