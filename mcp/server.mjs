@@ -184,7 +184,13 @@ function toolGetSkill({ name }) {
    phrase match beats scattered terms. No stemming, no fuzzy matching: a
    search that guesses is a search you cannot predict. */
 function toolSearchSkills({ query, limit = 5 }) {
-  if (!query || !query.trim()) throw new Error("search_skills requires a `query`.");
+  if (typeof query !== "string" || !query.trim()) {
+    throw new Error("search_skills requires a `query`.");
+  }
+  /* A client may send the limit as a string or something unusable. Without
+     this, a NaN limit sliced the results to nothing and the search reported
+     "No skill matched" even when it had matches. */
+  const max = Number.isFinite(Number(limit)) ? Math.trunc(Number(limit)) : 5;
   const q = query.toLowerCase().trim();
   const terms = q.split(/\s+/).filter((t) => t.length > 2);
 
@@ -209,7 +215,7 @@ function toolSearchSkills({ query, limit = 5 }) {
   }
 
   scored.sort((a, b) => b.score - a.score);
-  const top = scored.slice(0, Math.max(1, Math.min(limit, 12)));
+  const top = scored.slice(0, Math.max(1, Math.min(max, 12)));
 
   if (top.length === 0) {
     return `No skill matched "${query}". Call list_skills to see all ${LIB.skills.size}.`;
@@ -471,6 +477,39 @@ function handle(msg) {
   }
 }
 
+/* One parsed message in, one reply (or null) out. Never throws.
+ *
+ * Anything that is not a JSON object (null, a number, a string) is an Invalid
+ * Request. Before this check, a bare `null` line threw inside handle(), and the
+ * catch then read `msg.id` on null, which threw again out of the stdin handler
+ * and took the whole server down.
+ *
+ * Notifications get no reply, whatever their method: JSON-RPC forbids
+ * answering a message that carries no id. */
+function respond(msg) {
+  if (msg === null || typeof msg !== "object" || Array.isArray(msg)) {
+    return err(null, -32600, "Invalid Request: expected a JSON-RPC object");
+  }
+  const isNotification = msg.id === undefined || msg.id === null;
+  let reply;
+  try {
+    reply = handle(msg);
+  } catch (e) {
+    reply = err(msg.id ?? null, -32603, e.message);
+  }
+  return isNotification ? null : reply;
+}
+
+/* A JSON-RPC batch (an array), which protocol 2025-03-26 allows and which we
+   still negotiate. Answer with an array of the replies, or nothing at all when
+   every entry was a notification. */
+function respondToLine(parsed) {
+  if (!Array.isArray(parsed)) return respond(parsed);
+  if (parsed.length === 0) return err(null, -32600, "Invalid Request: empty batch");
+  const replies = parsed.map(respond).filter(Boolean);
+  return replies.length ? replies : null;
+}
+
 function serve() {
   let buffer = "";
   process.stdin.setEncoding("utf8");
@@ -491,12 +530,7 @@ function serve() {
         continue;
       }
 
-      let reply;
-      try {
-        reply = handle(msg);
-      } catch (e) {
-        reply = err(msg.id ?? null, -32603, e.message);
-      }
+      const reply = respondToLine(msg);
       if (reply) process.stdout.write(JSON.stringify(reply) + "\n");
     }
   });
