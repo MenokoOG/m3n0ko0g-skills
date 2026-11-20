@@ -19,6 +19,8 @@ const child = spawn(process.execPath, [SERVER], { stdio: ["pipe", "pipe", "pipe"
 let stdoutBuf = "";
 const pending = new Map();
 let stray = [];
+const batchReplies = [];
+const nullIdReplies = [];
 
 child.stdout.setEncoding("utf8");
 child.stdout.on("data", (chunk) => {
@@ -33,6 +35,16 @@ child.stdout.on("data", (chunk) => {
       msg = JSON.parse(line);
     } catch {
       stray.push(line);
+      continue;
+    }
+    /* Replies that cannot be matched to a request id: a batch answer (an
+       array) or an error about an unreadable message (id null). */
+    if (Array.isArray(msg)) {
+      batchReplies.push(msg);
+      continue;
+    }
+    if (msg.id === null) {
+      nullIdReplies.push(msg);
       continue;
     }
     const resolve = pending.get(msg.id);
@@ -66,6 +78,11 @@ function send(method, params) {
 
 function notify(method, params) {
   child.stdin.write(JSON.stringify({ jsonrpc: "2.0", method, params }) + "\n");
+}
+
+/* Write one raw line, for inputs a well-behaved client would never send. */
+function raw(line) {
+  child.stdin.write(line + "\n");
 }
 
 let passed = 0;
@@ -235,6 +252,52 @@ async function main() {
   /* unknown method */
   const unknown = await send("banana/peel", {});
   check("unknown method returns -32601", unknown.error?.code === -32601);
+
+  /* malformed input must not take the server down */
+  raw("null");
+  raw("42");
+  const afterJunk = await send("ping", {});
+  check("server survives a bare null or number line", !!afterJunk.result);
+  check(
+    "a non-object message gets -32600 with id null",
+    nullIdReplies.length === 2 && nullIdReplies.every((r) => r.error?.code === -32600),
+    JSON.stringify(nullIdReplies).slice(0, 120),
+  );
+
+  /* a notification is never answered, even for a real method */
+  notify("tools/list", {});
+  notify("ping", {});
+  const afterNotify = await send("ping", {});
+  check("notifications get no reply", !!afterNotify.result && stray.length === 0, stray.join(" | ").slice(0, 120));
+
+  /* a batch (protocol 2025-03-26) gets an array of replies */
+  raw(
+    JSON.stringify([
+      { jsonrpc: "2.0", id: 9001, method: "ping" },
+      { jsonrpc: "2.0", method: "notifications/initialized" },
+      { jsonrpc: "2.0", id: 9002, method: "banana/peel" },
+    ]),
+  );
+  await send("ping", {});
+  const batch = batchReplies[0] || [];
+  check("a batch is answered with an array", batchReplies.length === 1 && Array.isArray(batch));
+  check(
+    "the batch answers each request and skips the notification",
+    batch.length === 2 &&
+      batch.some((r) => r.id === 9001 && r.result) &&
+      batch.some((r) => r.id === 9002 && r.error?.code === -32601),
+    JSON.stringify(batch).slice(0, 120),
+  );
+
+  /* an unusable limit falls back to the default instead of hiding matches */
+  const badLimit = await send("tools/call", {
+    name: "search_skills",
+    arguments: { query: "rag", limit: "lots" },
+  });
+  check(
+    "a non-numeric limit still returns matches",
+    (badLimit.result?.content?.[0]?.text || "").includes("rag-integrity-check"),
+  );
 
   /* the transport rule */
   check("nothing stray was written to stdout", stray.length === 0, stray.join(" | ").slice(0, 120));
